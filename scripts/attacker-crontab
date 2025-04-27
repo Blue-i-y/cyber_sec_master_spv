@@ -1,0 +1,1 @@
+*/2 * * * * root /attack.sh >> /var/log/attack.log 2>&1
