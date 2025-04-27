@@ -1,3 +1,24 @@
 FROM kalilinux/kali-rolling
 
-RUN apt update && apt install -y metasploit-framework
+# Installation des outils d'attaque
+RUN apt-get update && apt-get install -y \
+    hydra \
+    nmap \
+    sqlmap \
+    gobuster \
+    slowloris \
+    curl \
+    cron \
+    && apt-get clean
+
+# Copie des scripts d'attaque
+COPY ./scripts/attack.sh /attack.sh
+RUN chmod +x /attack.sh
+
+# Planification de l'exécution automatique avec cron toutes les 2 minutes
+COPY ./scripts/attacker-crontab /etc/cron.d/attacker-cron
+RUN chmod 0644 /etc/cron.d/attacker-cron
+RUN crontab /etc/cron.d/attacker-cron
+
+# Lancer cron au démarrage
+CMD ["cron", "-f"]
